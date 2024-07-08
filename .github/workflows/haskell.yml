@@ -1,0 +1,45 @@
+name: Haskell CI
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # - name: Cache GHC
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.ghcup
+    #     key: ghcup-${{ runner.os }}-${{ hashFiles('**/stack.yaml.lock') }}
+    #     restore-keys: ghcup-${{ runner.os }}-
+
+    - name: Cache stack
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.stack/pantry
+          ~/.stack/programs
+          ~/.stack/snapshots
+          ~/.stack/stack.sqlite3
+        key: stack-${{ hashFiles('**/stack.yaml.lock', '**/*.cabal') }}
+        restore-keys: stack-
+
+    - name: Setup Haskell
+      uses: haskell-actions/setup@v2
+      with:
+        ghc-version: '9.6.6'
+        enable-stack: true
+        stack-no-global: true
+        stack-setup-ghc: true
+
+    # - name: Cache stack-work
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: .stack-work
+    #     key: stack-work-${{ hashFiles('**/stack.yaml.lock', '**/*.cabal') }}
+
+    - name: Build
+      run: stack build --lock-file error-on-write
