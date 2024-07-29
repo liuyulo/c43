@@ -5,16 +5,18 @@ data WelcomeView = WelcomeView
 
 instance View WelcomeView where
     html WelcomeView = [hsx|
-
         <h1>{renderUser currentUserOrNothing}</h1>
-
-        <h2>Getting Started</h2>
-
-        <ol>
-        <li>Create a new user <a href={NewUserAction}>here</a></li>
-        <li>Login as a user <a href={NewSessionAction}>here</a></li>
-        </ol>
+        {renderP currentUserOrNothing}
     |]
         where
-            renderUser (Just User {email})  = [hsx| Hi {email} <span style="float: right"><a class="js-delete js-delete-no-confirm" href={DeleteSessionAction}>Logout</a></span>|]
-            renderUser Nothing = [hsx| Please <a href={NewSessionAction}>login</a>|]
+            renderUser (Just User {email})  = [hsx| You are logged in as
+            <span class="text-primary">{email}</span>
+            <a class="btn btn-primary js-delete js-delete-no-confirm float-right" href={DeleteSessionAction}>Logout</a>|]
+            renderUser Nothing = "Getting Started"
+            renderP (Just User { id }) = [hsx| View <a href={ShowUserAction}>profile</a> |]
+            renderP Nothing = [hsx|
+                <div style="display: flex; gap: 2em">
+                <a class="btn btn-primary" href={NewUserAction}>Create account</a>
+                <a class="btn btn-primary" href={NewSessionAction}>Login</a>
+            </div>
+            |]

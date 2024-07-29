@@ -1,17 +1,21 @@
 module Web.View.Users.Show where
 import Web.View.Prelude
 
-data ShowView = ShowView { user :: User }
+data ShowView = ShowView
 
 instance View ShowView where
-    html ShowView { .. } = [hsx|
-        {breadcrumb}
-        <h1>Show User</h1>
-        <p>{user}</p>
+    html ShowView = [hsx|
+    {breadcrumb}
+        <h1>Hello <span class="text-primary">{currentUser.email}</span>
+         <a class="btn btn-primary js-delete js-delete-no-confirm float-right" href={DeleteSessionAction}>Logout</a></h1>
+        <ul>
+            <li><a href={PortfoliosAction}>portfolios</a></li>
+            <li><a href={FriendsAction}>friends</a></li>
+        </ul>
 
     |]
         where
             breadcrumb = renderBreadcrumb
-                            [ breadcrumbLink "Users" UsersAction
-                            , breadcrumbText "Show User"
-                            ]
+                [ breadcrumbText [hsx| <a href="/">Welcome</a> |]
+                , breadcrumbText "Profile"
+                ]

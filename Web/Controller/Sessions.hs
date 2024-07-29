@@ -5,7 +5,9 @@ import Web.View.Sessions.New
 import qualified IHP.AuthSupport.Controller.Sessions as Sessions
 
 instance Controller SessionsController where
-    action NewSessionAction = Sessions.newSessionAction @User
+    action NewSessionAction = do
+        Sessions.newSessionAction @User
+        redirectTo ShowUserAction
     action CreateSessionAction = Sessions.createSessionAction @User
     action DeleteSessionAction = Sessions.deleteSessionAction @User
 

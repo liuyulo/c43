@@ -11,8 +11,8 @@ instance View NewView where
     |]
         where
             breadcrumb = renderBreadcrumb
-                [ breadcrumbLink "Users" UsersAction
-                , breadcrumbText "New User"
+                [ breadcrumbText [hsx| <a href="/">Welcome</a> |]
+                , breadcrumbText "Create account"
                 ]
 
 renderForm :: User -> Html
