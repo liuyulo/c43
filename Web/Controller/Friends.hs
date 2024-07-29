@@ -5,17 +5,29 @@ import Web.View.Friends.Index
 import Web.View.Friends.New
 import Web.View.Friends.Edit
 import Web.View.Friends.Show
+import Data.Maybe
 
 instance Controller FriendsController where
     beforeAction = ensureIsUser
     action FriendsAction = do
-        friends <- query @Friend |> fetch
+        accepted <- query @Friend
+                |> filterWhere (#userFrom, currentUserId)
+                |> filterWhere (#status, Accepted)
+                |> fetch
+        incoming <- query @Friend
+                |> filterWhere (#userTo, currentUserId)
+                |> filterWhereNot (#status, Accepted)
+                |> fetch
+        outgoing <- query @Friend
+                |> filterWhere (#userFrom, currentUserId)
+                |> filterWhereNot (#status, Accepted)
+                |> fetch
         render IndexView { .. }
 
     action NewFriendAction = do
         let friend = newRecord
                 |> set #userFrom currentUserId
-                |> set #status (Just Pending)
+                |> set #status Pending
         render NewView { .. }
 
     action ShowFriendAction { friendId } = do
@@ -56,5 +68,4 @@ instance Controller FriendsController where
 
 buildFriend friend = friend
     |> fill @'["userFrom", "userTo", "status"]
-    |> validateField #userTo nonEmpty
 

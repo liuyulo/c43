@@ -41,7 +41,7 @@ CREATE TABLE friends (
     user_from UUID NOT NULL,
     user_to UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    status status,
+    status status NOT NULL,
     PRIMARY KEY(user_from, user_to)
 );
 CREATE INDEX friends_user_from_index ON friends (user_from);
