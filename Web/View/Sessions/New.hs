@@ -4,6 +4,7 @@ import IHP.AuthSupport.View.Sessions.New
 
 instance View (NewView User) where
     html NewView { .. } = [hsx|
+    {breadcrumb}
         <div class="h-100" id="sessions-new">
             <div class="d-flex align-items-center">
                 <div class="w-100">
@@ -15,6 +16,11 @@ instance View (NewView User) where
             </div>
         </div>
     |]
+        where
+            breadcrumb = renderBreadcrumb
+                [ breadcrumbText [hsx| <a href="/">Welcome</a> |]
+                , breadcrumbText "Login"
+                ]
 
 renderForm :: User -> Html
 renderForm user = [hsx|
