@@ -5,21 +5,18 @@ data WelcomeView = WelcomeView
 
 instance View WelcomeView where
     html WelcomeView = [hsx|
-
         <h1>{renderUser currentUserOrNothing}</h1>
-
-        <h2>Getting Started</h2>
-
-        <ol>
-        <li><a href={NewUserAction}>Create</a> a new user</li>
-        <li><a href={NewSessionAction}>Login</a> as a user</li>
-        </ol>
-        <h2>User Profile</h2>
-
-        {renderProfile currentUserOrNothing}
+        {renderP currentUserOrNothing}
     |]
         where
-            renderUser (Just User {email})  = [hsx| Hi {email} <span style="float: right"><a class="js-delete js-delete-no-confirm" href={DeleteSessionAction}>Logout</a></span>|]
-            renderUser Nothing = [hsx| Please login|]
-            renderProfile (Just User {id}) = [hsx| Go to my <a href={ShowUserAction id}>profile</a> |]
-            renderProfile Nothing = [hsx| Nothing to see here |]
+            renderUser (Just User {email})  = [hsx| You are logged in as
+            <span class="text-primary">{email}</span>
+            <a class="btn btn-primary js-delete js-delete-no-confirm float-right" href={DeleteSessionAction}>Logout</a>|]
+            renderUser Nothing = "Getting Started"
+            renderP (Just User { id }) = [hsx| View <a href={ShowUserAction}>profile</a> |]
+            renderP Nothing = [hsx|
+                <div style="display: flex; gap: 2em">
+                <a class="btn btn-primary" href={NewUserAction}>Create account</a>
+                <a class="btn btn-primary" href={NewSessionAction}>Login</a>
+            </div>
+            |]

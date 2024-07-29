@@ -10,3 +10,6 @@ instance AutoRoute SessionsController
 
 instance AutoRoute PortfoliosController
 
+
+instance AutoRoute FriendsController
+

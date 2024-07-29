@@ -9,9 +9,9 @@ import Web.View.Portfolios.Show
 instance Controller PortfoliosController where
     beforeAction = ensureIsUser
 
-    action PortfoliosAction { userId } = do
-        portfolios <- query @Portfolio |> fetch
-        user <- fetch userId
+    action PortfoliosAction = do
+        portfolios <- query @Portfolio |> filterWhere (#userId, currentUserId) |> fetch
+        user <- fetch currentUserId
         render IndexView { .. }
 
     action NewPortfolioAction { userId } = do
@@ -39,7 +39,7 @@ instance Controller PortfoliosController where
                 Right portfolio -> do
                     portfolio <- portfolio |> updateRecord
                     setSuccessMessage "Portfolio updated"
-                    redirectTo EditPortfolioAction { .. }
+                    redirectTo PortfoliosAction
 
     action CreatePortfolioAction = do
         let portfolio = newRecord @Portfolio |> set #userId currentUser.id
@@ -52,13 +52,13 @@ instance Controller PortfoliosController where
                 Right portfolio -> do
                     portfolio <- portfolio |> createRecord
                     setSuccessMessage "Portfolio created"
-                    redirectTo ShowUserAction { userId = get #userId portfolio }
+                    redirectTo PortfoliosAction
 
     action DeletePortfolioAction { portfolioId } = do
         portfolio <- fetch portfolioId
         deleteRecord portfolio
         setSuccessMessage "Portfolio deleted"
-        redirectTo PortfoliosAction { userId = get #userId portfolio }
+        redirectTo PortfoliosAction
 
 buildPortfolio portfolio = portfolio
     |> fill @'["userId", "portfolioName", "cash"]

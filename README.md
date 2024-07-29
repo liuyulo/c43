@@ -6,11 +6,17 @@
 
 - ER diagram, schemas are in [Overleaf](https://www.overleaf.com/project/667986e34672fcb8ff2e1095)
 
+## Features
+
+- [x] unique usernames
+- [x] when accept request, add backwards edge
+
 ## Data
 
 ```
 make db
-pg_restore -j 12 -d app db.dump -h $PWD/build/db
+pg_dump -a -h $PWD/build/db -d app -j 12 -Fd -f dump
+pg_restore -j 12 -d app dump -h $PWD/build/db
 ```
 
 ## Installation
