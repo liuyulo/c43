@@ -7,7 +7,6 @@ import Web.View.Users.Edit
 import Web.View.Users.Show
 
 instance Controller UsersController where
-    beforeAction = ensureIsUser
     action UsersAction = do
         users <- query @User |> fetch
         render IndexView { .. }
@@ -17,10 +16,12 @@ instance Controller UsersController where
         render NewView { .. }
 
     action ShowUserAction  = do
+        ensureIsUser
         user <- fetch currentUserId
         render ShowView { .. }
 
     action EditUserAction { userId } = do
+        ensureIsUser
         user <- fetch userId
         render EditView { .. }
 
