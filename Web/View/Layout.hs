@@ -23,7 +23,6 @@ defaultLayout inner = [hsx|
     </head>
     <body>
         <div class="container mt-4">
-        <a href="/">Home</a>
             {renderFlashMessages}
             {inner}
         </div>

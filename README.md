@@ -6,6 +6,13 @@
 
 - ER diagram, schemas are in [Overleaf](https://www.overleaf.com/project/667986e34672fcb8ff2e1095)
 
+## Data
+
+```
+make db
+pg_restore -j 12 -d app db.dump -h $PWD/build/db
+```
+
 ## Installation
 
 - Haskell: [ghcup](https://www.haskell.org/ghcup/install/)

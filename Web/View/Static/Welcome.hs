@@ -11,10 +11,15 @@ instance View WelcomeView where
         <h2>Getting Started</h2>
 
         <ol>
-        <li>Create a new user <a href={NewUserAction}>here</a></li>
-        <li>Login as a user <a href={NewSessionAction}>here</a></li>
+        <li><a href={NewUserAction}>Create</a> a new user</li>
+        <li><a href={NewSessionAction}>Login</a> as a user</li>
         </ol>
+        <h2>User Profile</h2>
+
+        {renderProfile currentUserOrNothing}
     |]
         where
             renderUser (Just User {email})  = [hsx| Hi {email} <span style="float: right"><a class="js-delete js-delete-no-confirm" href={DeleteSessionAction}>Logout</a></span>|]
-            renderUser Nothing = [hsx| Please <a href={NewSessionAction}>login</a>|]
+            renderUser Nothing = [hsx| Please login|]
+            renderProfile (Just User {id}) = [hsx| Go to my <a href={ShowUserAction id}>profile</a> |]
+            renderProfile Nothing = [hsx| Nothing to see here |]
