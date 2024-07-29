@@ -7,7 +7,7 @@ import qualified IHP.AuthSupport.Controller.Sessions as Sessions
 instance Controller SessionsController where
     action NewSessionAction = do
         Sessions.newSessionAction @User
-        redirectToPath "/"
+        redirectTo ShowUserAction { userId = currentUserId }
     action CreateSessionAction = Sessions.createSessionAction @User
     action DeleteSessionAction = Sessions.deleteSessionAction @User
 
