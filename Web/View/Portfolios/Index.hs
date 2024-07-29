@@ -29,7 +29,7 @@ instance View IndexView where
         where
             breadcrumb = renderBreadcrumb
                 [
-                    breadcrumbLink "Profile" ShowUserAction {userId = user.id},
+                    breadcrumbLink "Profile" ShowUserAction,
                     breadcrumbText "Portfolios"
                 ]
 

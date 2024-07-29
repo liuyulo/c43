@@ -7,6 +7,7 @@ import Web.View.Users.Edit
 import Web.View.Users.Show
 
 instance Controller UsersController where
+    beforeAction = ensureIsUser
     action UsersAction = do
         users <- query @User |> fetch
         render IndexView { .. }
@@ -15,8 +16,8 @@ instance Controller UsersController where
         let user = newRecord
         render NewView { .. }
 
-    action ShowUserAction { userId } = do
-        user <- fetch userId
+    action ShowUserAction  = do
+        user <- fetch currentUserId
         render ShowView { .. }
 
     action EditUserAction { userId } = do

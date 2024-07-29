@@ -13,7 +13,7 @@ instance View WelcomeView where
             <span class="text-primary">{email}</span>
             <a class="btn btn-primary js-delete js-delete-no-confirm float-right" href={DeleteSessionAction}>Logout</a>|]
             renderUser Nothing = "Getting Started"
-            renderP (Just User { id }) = [hsx| View <a href={ShowUserAction id}>profile</a> |]
+            renderP (Just User { id }) = [hsx| View <a href={ShowUserAction}>profile</a> |]
             renderP Nothing = [hsx|
                 <div style="display: flex; gap: 2em">
                 <a class="btn btn-primary" href={NewUserAction}>Create account</a>

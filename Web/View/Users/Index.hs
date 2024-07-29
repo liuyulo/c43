@@ -32,7 +32,7 @@ renderUser :: User -> Html
 renderUser user = [hsx|
     <tr>
         <td>{user.email}</td>
-        <td><a href={ShowUserAction user.id}>Show</a></td>
+        <td><a href={ShowUserAction}>Show</a></td>
         <td><a href={EditUserAction user.id} class="text-muted">Edit</a></td>
         <td><a href={DeleteUserAction user.id} class="js-delete text-muted">Delete</a></td>
     </tr>

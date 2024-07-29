@@ -11,7 +11,7 @@ instance View NewView where
     |]
         where
             breadcrumb = renderBreadcrumb
-                [ breadcrumbLink "Profile" ShowUserAction {userId = user.id}
+                [ breadcrumbLink "Profile" ShowUserAction
                 , breadcrumbText "New Portfolio"
                 ]
 

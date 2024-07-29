@@ -39,7 +39,7 @@ instance Controller PortfoliosController where
                 Right portfolio -> do
                     portfolio <- portfolio |> updateRecord
                     setSuccessMessage "Portfolio updated"
-                    redirectTo EditPortfolioAction { .. }
+                    redirectTo PortfoliosAction
 
     action CreatePortfolioAction = do
         let portfolio = newRecord @Portfolio |> set #userId currentUser.id
@@ -52,7 +52,7 @@ instance Controller PortfoliosController where
                 Right portfolio -> do
                     portfolio <- portfolio |> createRecord
                     setSuccessMessage "Portfolio created"
-                    redirectTo ShowUserAction { userId = get #userId portfolio }
+                    redirectTo PortfoliosAction
 
     action DeletePortfolioAction { portfolioId } = do
         portfolio <- fetch portfolioId

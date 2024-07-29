@@ -17,7 +17,7 @@ type instance CurrentUserRecord = User
 data UsersController
     = UsersAction
     | NewUserAction
-    | ShowUserAction { userId :: !(Id User) }
+    | ShowUserAction
     | CreateUserAction
     | EditUserAction { userId :: !(Id User) }
     | UpdateUserAction { userId :: !(Id User) }
