@@ -15,7 +15,7 @@
 
 ```
 make db
-pg_dump -h $PWD/build/db -d app -j 12 -Fd -f dump
+pg_dump -a -h $PWD/build/db -d app -j 12 -Fd -f dump
 pg_restore -j 12 -d app dump -h $PWD/build/db
 ```
 
