@@ -29,6 +29,6 @@ instance View ShowView where
             breadcrumb = renderBreadcrumb
                 [
                     breadcrumbLink "Profile" ShowUserAction {userId = user.id},
-                    breadcrumbLink "Portfolios" PortfoliosAction {userId = user.id},
+                    breadcrumbLink "Portfolios" PortfoliosAction ,
                     breadcrumbText "Portfolio"
                 ]

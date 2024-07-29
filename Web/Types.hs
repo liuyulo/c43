@@ -31,7 +31,7 @@ data SessionsController
     | DeleteSessionAction
     deriving (Eq, Show, Data)
 data PortfoliosController
-    = PortfoliosAction { userId :: !(Id User)}
+    = PortfoliosAction
     | NewPortfolioAction { userId :: !(Id User)}
     | ShowPortfolioAction { portfolioId :: !(Id Portfolio) }
     | CreatePortfolioAction

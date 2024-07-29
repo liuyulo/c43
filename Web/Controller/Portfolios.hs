@@ -9,9 +9,9 @@ import Web.View.Portfolios.Show
 instance Controller PortfoliosController where
     beforeAction = ensureIsUser
 
-    action PortfoliosAction { userId } = do
-        portfolios <- query @Portfolio |> fetch
-        user <- fetch userId
+    action PortfoliosAction = do
+        portfolios <- query @Portfolio |> filterWhere (#userId, currentUserId) |> fetch
+        user <- fetch currentUserId
         render IndexView { .. }
 
     action NewPortfolioAction { userId } = do
@@ -58,7 +58,7 @@ instance Controller PortfoliosController where
         portfolio <- fetch portfolioId
         deleteRecord portfolio
         setSuccessMessage "Portfolio deleted"
-        redirectTo PortfoliosAction { userId = get #userId portfolio }
+        redirectTo PortfoliosAction
 
 buildPortfolio portfolio = portfolio
     |> fill @'["userId", "portfolioName", "cash"]

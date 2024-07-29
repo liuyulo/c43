@@ -9,7 +9,9 @@ instance View WelcomeView where
         {renderP currentUserOrNothing}
     |]
         where
-            renderUser (Just User {email})  = [hsx| Hello <span class="text-primary">{email}</span>|]
+            renderUser (Just User {email})  = [hsx| You are logged in as
+            <span class="text-primary">{email}</span>
+            <a class="btn btn-primary js-delete js-delete-no-confirm float-right" href={DeleteSessionAction}>Logout</a>|]
             renderUser Nothing = "Getting Started"
             renderP (Just User { id }) = [hsx| View <a href={ShowUserAction id}>profile</a> |]
             renderP Nothing = [hsx|
