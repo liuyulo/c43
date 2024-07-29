@@ -39,3 +39,13 @@ data PortfoliosController
     | UpdatePortfolioAction { portfolioId :: !(Id Portfolio) }
     | DeletePortfolioAction { portfolioId :: !(Id Portfolio) }
     deriving (Eq, Show, Data)
+
+data FriendsController
+    = FriendsAction
+    | NewFriendAction
+    | ShowFriendAction { friendId :: !(Id Friend) }
+    | CreateFriendAction
+    | EditFriendAction { friendId :: !(Id Friend) }
+    | UpdateFriendAction { friendId :: !(Id Friend) }
+    | DeleteFriendAction { friendId :: !(Id Friend) }
+    deriving (Eq, Show, Data)
