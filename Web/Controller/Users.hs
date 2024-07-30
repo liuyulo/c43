@@ -15,11 +15,13 @@ instance Controller UsersController where
         let user = newRecord
         render NewView { .. }
 
-    action ShowUserAction { userId } = do
-        user <- fetch userId
+    action ShowUserAction  = do
+        ensureIsUser
+        user <- fetch currentUserId
         render ShowView { .. }
 
     action EditUserAction { userId } = do
+        ensureIsUser
         user <- fetch userId
         render EditView { .. }
 

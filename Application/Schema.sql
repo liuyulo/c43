@@ -9,6 +9,7 @@ CREATE TABLE portfolios (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
     user_id UUID NOT NULL,
     portfolio_name TEXT NOT NULL,
+    cash INT DEFAULT 0 NOT NULL,
     UNIQUE(user_id, portfolio_name)
 );
 CREATE TABLE portfolio_holds (
@@ -40,7 +41,7 @@ CREATE TABLE friends (
     user_from UUID NOT NULL,
     user_to UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    status status,
+    status status NOT NULL,
     PRIMARY KEY(user_from, user_to)
 );
 CREATE INDEX friends_user_from_index ON friends (user_from);

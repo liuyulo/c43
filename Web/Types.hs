@@ -17,7 +17,7 @@ type instance CurrentUserRecord = User
 data UsersController
     = UsersAction
     | NewUserAction
-    | ShowUserAction { userId :: !(Id User) }
+    | ShowUserAction
     | CreateUserAction
     | EditUserAction { userId :: !(Id User) }
     | UpdateUserAction { userId :: !(Id User) }
@@ -29,4 +29,23 @@ data SessionsController
     = NewSessionAction
     | CreateSessionAction
     | DeleteSessionAction
+    deriving (Eq, Show, Data)
+data PortfoliosController
+    = PortfoliosAction
+    | NewPortfolioAction { userId :: !(Id User)}
+    | ShowPortfolioAction { portfolioId :: !(Id Portfolio) }
+    | CreatePortfolioAction
+    | EditPortfolioAction { portfolioId :: !(Id Portfolio) }
+    | UpdatePortfolioAction { portfolioId :: !(Id Portfolio) }
+    | DeletePortfolioAction { portfolioId :: !(Id Portfolio) }
+    deriving (Eq, Show, Data)
+
+data FriendsController
+    = FriendsAction
+    | NewFriendAction
+    | ShowFriendAction { friendId :: !(Id Friend) }
+    | CreateFriendAction
+    | EditFriendAction { friendId :: !(Id Friend) }
+    | UpdateFriendAction { friendId :: !(Id Friend) }
+    | DeleteFriendAction { friendId :: !(Id Friend) }
     deriving (Eq, Show, Data)
