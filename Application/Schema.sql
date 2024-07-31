@@ -1,6 +1,6 @@
 CREATE TABLE users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
-    email TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     locked_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     failed_login_attempts INT DEFAULT 0 NOT NULL
@@ -38,14 +38,12 @@ CREATE TABLE transactions (
 CREATE INDEX transactions_created_at_index ON transactions (created_at);
 CREATE TYPE status AS ENUM ('ACCEPTED', 'REJECTED', 'PENDING');
 CREATE TABLE friends (
-    user_from UUID NOT NULL,
-    user_to UUID NOT NULL,
+    user_from TEXT NOT NULL,
+    user_to TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     status status NOT NULL,
     PRIMARY KEY(user_from, user_to)
 );
-CREATE INDEX friends_user_from_index ON friends (user_from);
-CREATE INDEX friends_user_to_index ON friends (user_to);
 CREATE TABLE accesses (
     user_id UUID NOT NULL,
     owner_id UUID NOT NULL,
@@ -84,8 +82,6 @@ CREATE INDEX transactions_portfolio_from_index ON transactions (portfolio_from);
 CREATE INDEX transactions_portfolio_to_index ON transactions (portfolio_to);
 ALTER TABLE accesses ADD CONSTRAINT accesses_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE NO ACTION;
 ALTER TABLE accesses ADD CONSTRAINT accesses_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
-ALTER TABLE friends ADD CONSTRAINT friends_ref_user_from FOREIGN KEY (user_from) REFERENCES users (id) ON DELETE NO ACTION;
-ALTER TABLE friends ADD CONSTRAINT friends_ref_user_to FOREIGN KEY (user_to) REFERENCES users (id) ON DELETE NO ACTION;
 ALTER TABLE history ADD CONSTRAINT history_ref_symbol FOREIGN KEY (symbol) REFERENCES stocks ON DELETE NO ACTION;
 ALTER TABLE list_contains ADD CONSTRAINT list_contains_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE NO ACTION;
 ALTER TABLE list_contains ADD CONSTRAINT list_contains_ref_symbol FOREIGN KEY (symbol) REFERENCES stocks ON DELETE NO ACTION;

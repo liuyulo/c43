@@ -6,7 +6,7 @@ data NewView = NewView { friend :: Friend }
 instance View NewView where
     html NewView { .. } = [hsx|
         {breadcrumb}
-        <h1>Send Friend Request</h1>
+        <h1>Send Friend Request from <span class="text-primary">{friend.userFrom}</span></h1>
         {renderForm friend}
     |]
         where
@@ -19,9 +19,9 @@ instance View NewView where
 
 renderForm :: Friend -> Html
 renderForm friend = formFor friend [hsx|
-    {(textField #userFrom)}
-    {(textField #userTo)}
-    {(textField #status)}
+    {(hiddenField #userFrom)}
+    {(textField #userTo) { fieldLabel = "Username", additionalAttributes = [ ("autocomplete", "off") ] }}
+    {(hiddenField #status)}
     {submitButton}
 
 |]

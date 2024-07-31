@@ -16,21 +16,20 @@ instance View IndexView where
             <table class="table">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <th>Name</th>
+                        <th>At</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>{forEach accepted renderFriend}</tbody>
             </table>
-            <h2>Incoming requests</h2>
+             <h2>Incoming requests</h2>
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>From</th>
                         <th>Status</th>
-                        <th>Recieved at</th>
+                        <th>At</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -41,9 +40,9 @@ instance View IndexView where
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>To</th>
                         <th>Status</th>
-                        <th>Sent at</th>
+                        <th>At</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -60,9 +59,9 @@ instance View IndexView where
 renderFriend :: Friend -> Html
 renderFriend friend = [hsx|
     <tr>
-        <td>{friend}</td>
-        <td><a href={ShowFriendAction friend.id}>Show</a></td>
-        <td><a href={DeleteFriendAction friend.id} class="js-delete text-muted">Delete</a></td>
+        <td>{friend.userTo}</td>
+        <td>{showTime friend.createdAt}</td>
+        <td><a href={RejectFriendAction friend.userTo} class="btn btn-danger">Reject</a></td>
     </tr>
 |]
 
@@ -71,18 +70,34 @@ renderI friend = [hsx|
     <tr>
         <td>{friend.userFrom}</td>
         <td>{friend.status}</td>
-        <td>{friend.createdAt}</td>
-        <td><a class="btn btn-primary">Accept</a></td>
-        <td><a class="btn btn-danger">Reject</a></td>
+        <td>{showTime friend.createdAt}</td>
+        <td>{reject}</td>
+        <td><a href={AcceptFriendAction friend.userFrom} class="btn btn-primary">Accept</a></td>
     </tr>
 |]
+    where
+        reject | friend.status == Rejected = ""
+               | otherwise = [hsx| <a href={RejectFriendAction friend.userFrom} class="btn btn-danger">Reject</a> |]
 
 renderO :: Friend -> Html
 renderO friend = [hsx|
     <tr>
         <td>{friend.userTo}</td>
         <td>{friend.status}</td>
-        <td>{friend.createdAt}</td>
-        <td><a href={DeleteFriendAction friend.id} class="js-delete btn btn-danger">Recall</a></td>
+        <td>{showTime friend.createdAt}</td>
+        <td>{button}</td>
     </tr>
 |]
+    where
+        button
+            | friend.status == Rejected = [hsx|
+                <a href={RequestAgainAction friend.userTo} class="btn btn-primary">Request Again</a>
+            |]
+            | otherwise = [hsx|
+                <a href={DeleteFriendAction friend.userTo} class="js-delete btn btn-danger">Recall</a>
+            |]
+
+
+showTime t = formatTime defaultTimeLocale "%Y-%m-%d %H:%M:%S" zoned
+  where
+    zoned = utcToZonedTime (hoursToTimeZone (- 4)) t

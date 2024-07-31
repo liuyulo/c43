@@ -45,7 +45,8 @@ data FriendsController
     | NewFriendAction
     | ShowFriendAction { friendId :: !(Id Friend) }
     | CreateFriendAction
-    | EditFriendAction { friendId :: !(Id Friend) }
-    | UpdateFriendAction { friendId :: !(Id Friend) }
-    | DeleteFriendAction { friendId :: !(Id Friend) }
+    | RequestAgainAction { userTo :: Text }
+    | DeleteFriendAction { userTo :: Text }
+    | AcceptFriendAction { userFrom :: Text }
+    | RejectFriendAction { userFrom :: Text }
     deriving (Eq, Show, Data)
