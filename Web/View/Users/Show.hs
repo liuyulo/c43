@@ -9,8 +9,9 @@ instance View ShowView where
         <h1>Hello <span class="text-primary">{currentUser.email}</span>
          <a class="btn btn-primary js-delete js-delete-no-confirm float-right" href={DeleteSessionAction}>Logout</a></h1>
         <ul>
-            <li><a href={PortfoliosAction}>portfolios</a></li>
-            <li><a href={FriendsAction}>friends</a></li>
+            <li><a href={PortfoliosAction}>Portfolios</a></li>
+            <li><a href={FriendsAction}>Friends</a></li>
+            <li><a href={StocklistsAction}>Stock lists</a></li>
         </ul>
 
     |]

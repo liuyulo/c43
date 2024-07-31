@@ -11,9 +11,8 @@ instance View EditView where
 
 renderForm :: Portfolio -> Html
 renderForm portfolio = formFor portfolio [hsx|
-    {(hiddenField #userId)}
+    {(hiddenField #username)}
     {(textField #portfolioName)}
     {(numberField #cash)}
     {submitButton}
-
 |]

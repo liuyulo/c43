@@ -7,10 +7,10 @@ CREATE TABLE users (
 );
 CREATE TABLE portfolios (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
-    user_id UUID NOT NULL,
+    username TEXT NOT NULL,
     portfolio_name TEXT NOT NULL,
     cash INT DEFAULT 0 NOT NULL,
-    UNIQUE(user_id, portfolio_name)
+    UNIQUE(username, portfolio_name)
 );
 CREATE TABLE portfolio_holds (
     portfolio_id UUID NOT NULL,
@@ -20,13 +20,12 @@ CREATE TABLE portfolio_holds (
 );
 CREATE TABLE stocklists (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL UNIQUE,
-    user_id UUID NOT NULL,
+    username TEXT NOT NULL,
     list_name TEXT NOT NULL,
     is_public BOOLEAN DEFAULT false NOT NULL,
     category TEXT NOT NULL,
-    UNIQUE(user_id, list_name)
+    UNIQUE(username, list_name)
 );
-CREATE INDEX stocklists_user_id_index ON stocklists (user_id);
 CREATE TABLE transactions (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
@@ -35,7 +34,6 @@ CREATE TABLE transactions (
     portfolio_to UUID NOT NULL,
     symbol TEXT NOT NULL
 );
-CREATE INDEX transactions_created_at_index ON transactions (created_at);
 CREATE TYPE status AS ENUM ('ACCEPTED', 'REJECTED', 'PENDING');
 CREATE TABLE friends (
     user_from TEXT NOT NULL,
@@ -45,20 +43,16 @@ CREATE TABLE friends (
     PRIMARY KEY(user_from, user_to)
 );
 CREATE TABLE accesses (
-    user_id UUID NOT NULL,
-    owner_id UUID NOT NULL,
+    username TEXT NOT NULL,
     list_id UUID NOT NULL,
-    PRIMARY KEY(list_id, owner_id, user_id)
+    PRIMARY KEY(list_id, username)
 );
-CREATE INDEX accesses_user_id_index ON accesses (user_id);
 CREATE TABLE reviews (
-    user_id UUID NOT NULL,
+    username TEXT NOT NULL,
     list_id UUID NOT NULL,
     content TEXT NOT NULL,
-    PRIMARY KEY(user_id, list_id)
+    PRIMARY KEY(username, list_id)
 );
-CREATE INDEX reviews_user_id_index ON reviews (user_id);
-CREATE INDEX reviews_list_id_index ON reviews (list_id);
 CREATE TABLE list_contains (
     list_id UUID NOT NULL,
     symbol TEXT NOT NULL,
@@ -80,17 +74,30 @@ CREATE TABLE history (
 );
 CREATE INDEX transactions_portfolio_from_index ON transactions (portfolio_from);
 CREATE INDEX transactions_portfolio_to_index ON transactions (portfolio_to);
-ALTER TABLE accesses ADD CONSTRAINT accesses_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE NO ACTION;
-ALTER TABLE accesses ADD CONSTRAINT accesses_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
+CREATE INDEX reviews_user_id_index ON reviews (username);
+CREATE INDEX reviews_list_id_index ON reviews (list_id);
+CREATE INDEX accesses_user_to_index ON accesses (username);
+CREATE INDEX transactions_created_at_index ON transactions (created_at);
+CREATE INDEX stocklists_user_id_index ON stocklists (username);
+-- TODO reviews: user_id must have access to list_id
+-- TODO accesses: user_id can't own list_id
+-- ALTER TABLE accesses ADD CONSTRAINT accesses_ref_user_to FOREIGN KEY (user_to) REFERENCES users (email) ON DELETE CASCADE;
+ALTER TABLE accesses ADD CONSTRAINT accesses_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists ON DELETE CASCADE;
 ALTER TABLE history ADD CONSTRAINT history_ref_symbol FOREIGN KEY (symbol) REFERENCES stocks ON DELETE NO ACTION;
-ALTER TABLE list_contains ADD CONSTRAINT list_contains_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE NO ACTION;
+ALTER TABLE list_contains ADD CONSTRAINT list_contains_positive_amount CHECK (amount > 0);
+ALTER TABLE list_contains ADD CONSTRAINT list_contains_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE CASCADE;
 ALTER TABLE list_contains ADD CONSTRAINT list_contains_ref_symbol FOREIGN KEY (symbol) REFERENCES stocks ON DELETE NO ACTION;
-ALTER TABLE portfolio_holds ADD CONSTRAINT portfolio_holds_ref_portfolio_id FOREIGN KEY (portfolio_id) REFERENCES portfolios (id) ON DELETE NO ACTION;
+ALTER TABLE portfolios ADD CONSTRAINT portfolio_cash_nonnegative CHECK (cash >= 0);
+ALTER TABLE portfolio_holds ADD CONSTRAINT portfolio_holds_amount_positive CHECK (amount > 0);
+ALTER TABLE portfolio_holds ADD CONSTRAINT portfolio_holds_ref_portfolio_id FOREIGN KEY (portfolio_id) REFERENCES portfolios (id) ON DELETE CASCADE;
 ALTER TABLE portfolio_holds ADD CONSTRAINT portfolio_holds_ref_symbol FOREIGN KEY (symbol) REFERENCES stocks ON DELETE NO ACTION;
-ALTER TABLE portfolios ADD CONSTRAINT portfolios_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
-ALTER TABLE reviews ADD CONSTRAINT reviews_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE NO ACTION;
-ALTER TABLE reviews ADD CONSTRAINT reviews_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
-ALTER TABLE stocklists ADD CONSTRAINT stocklists_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
-ALTER TABLE transactions ADD CONSTRAINT transactions_ref_portfolio_from FOREIGN KEY (portfolio_from) REFERENCES portfolios (id) ON DELETE NO ACTION;
-ALTER TABLE transactions ADD CONSTRAINT transactions_ref_portfolio_to FOREIGN KEY (portfolio_to) REFERENCES portfolios (id) ON DELETE NO ACTION;
+ALTER TABLE portfolios ADD CONSTRAINT portfolio_nonempty_name CHECK (portfolio_name <> '');
+ALTER TABLE reviews ADD CONSTRAINT reviews_nonempty_content CHECK (content <> '');
+ALTER TABLE reviews ADD CONSTRAINT reviews_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE CASCADE;
+ALTER TABLE stocklists ADD CONSTRAINT stocklists_nonempty_category CHECK (category <> '');
+ALTER TABLE stocklists ADD CONSTRAINT stocklists_nonempty_name CHECK (list_name <> '');
+ALTER TABLE transactions ADD CONSTRAINT transactions_amount_positive CHECK (amount > 0);
+ALTER TABLE transactions ADD CONSTRAINT transactions_ref_portfolio_from FOREIGN KEY (portfolio_from) REFERENCES portfolios (id) ON DELETE CASCADE;
+ALTER TABLE transactions ADD CONSTRAINT transactions_ref_portfolio_to FOREIGN KEY (portfolio_to) REFERENCES portfolios (id) ON DELETE CASCADE;
 ALTER TABLE transactions ADD CONSTRAINT transactions_ref_symbol FOREIGN KEY (symbol) REFERENCES stocks ON DELETE NO ACTION;
+ALTER TABLE users ADD CONSTRAINT users_nonempty_email CHECK (email <> '');
