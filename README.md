@@ -9,7 +9,7 @@
 ## Features
 
 - [x] unique usernames
-- [ ] when accept request, add backwards edge
+- [x] when accept request, add backwards edge
 
 ## Data
 
