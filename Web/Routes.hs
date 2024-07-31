@@ -13,3 +13,12 @@ instance AutoRoute PortfoliosController
 
 instance AutoRoute FriendsController
 
+
+instance AutoRoute StocklistsController
+
+
+instance AutoRoute ListContainController
+
+
+instance AutoRoute ReviewsController
+

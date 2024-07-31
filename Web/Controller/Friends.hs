@@ -4,8 +4,6 @@ import Debug.Trace
 import Web.Controller.Prelude
 import Web.View.Friends.Index
 import Web.View.Friends.New
-import Web.View.Friends.Show
-import qualified IHP.Log as Log
 instance Controller FriendsController where
     beforeAction = ensureIsUser
     action FriendsAction = do
@@ -29,9 +27,6 @@ instance Controller FriendsController where
                 |> set #status Pending
         render NewView { .. }
 
-    action ShowFriendAction { friendId } = do
-        friend <- fetch friendId
-        render ShowView { .. }
 
     action AcceptFriendAction { userFrom } = do
         now <- getCurrentTime

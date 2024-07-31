@@ -17,7 +17,7 @@ instance View NewView where
 
 renderForm :: Portfolio -> Html
 renderForm portfolio = formFor portfolio [hsx|
-    {(hiddenField #userId)}
+    {(hiddenField #username)}
     {(textField #portfolioName)}
     {submitButton}
 |]

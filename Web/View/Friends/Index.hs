@@ -53,7 +53,7 @@ instance View IndexView where
         where
             breadcrumb = renderBreadcrumb
                 [ breadcrumbLink "Profile" ShowUserAction,
-                    breadcrumbText "Friends"
+                    breadcrumbLink "Friends" FriendsAction
                 ]
 
 renderFriend :: Friend -> Html

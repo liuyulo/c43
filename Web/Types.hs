@@ -43,10 +43,34 @@ data PortfoliosController
 data FriendsController
     = FriendsAction
     | NewFriendAction
-    | ShowFriendAction { friendId :: !(Id Friend) }
     | CreateFriendAction
     | RequestAgainAction { userTo :: Text }
     | DeleteFriendAction { userTo :: Text }
     | AcceptFriendAction { userFrom :: Text }
     | RejectFriendAction { userFrom :: Text }
+    deriving (Eq, Show, Data)
+
+data StocklistsController
+    = StocklistsAction
+    | NewStocklistAction
+    | ShowStocklistAction { stocklistId :: !(Id Stocklist) }
+    | CreateStocklistAction
+    | CreateAccessAction
+    | DeleteAccessAction {stocklistId :: !(Id Stocklist), userTo :: Text}
+    | EditStocklistAction { stocklistId :: !(Id Stocklist) }
+    | UpdateStocklistAction { stocklistId :: !(Id Stocklist) }
+    | DeleteStocklistAction { stocklistId :: !(Id Stocklist) }
+    deriving (Eq, Show, Data)
+
+data ListContainController
+    = CreateListContain
+    | UpdateListContainAction { stocklistId :: !(Id Stocklist) }
+    | DeleteListContainAction{ stocklistId :: !(Id Stocklist), symbol :: Text }
+    deriving (Eq, Show, Data)
+
+data ReviewsController
+    = CreateReviewAction
+    | EditReviewAction { listId :: !(Id Stocklist), username ::Text }
+    | UpdateReviewAction { listId :: !(Id Stocklist), username ::Text }
+    | DeleteReviewAction { listId :: !(Id Stocklist), username ::Text }
     deriving (Eq, Show, Data)
