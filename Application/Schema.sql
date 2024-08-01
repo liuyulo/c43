@@ -80,6 +80,30 @@ CREATE TABLE history (
     symbol TEXT NOT NULL,
     PRIMARY KEY(symbol, timestamp)
 );
+CREATE TABLE stock_changes (
+    "timestamp" DATE NOT NULL,
+    "close" REAL NOT NULL,
+    symbol TEXT NOT NULL,
+    diff REAL NOT NULL,
+    PRIMARY KEY(symbol, timestamp)
+);
+CREATE TABLE market_changes (
+    timestamp DATE NOT NULL,
+    market_diff REAL NOT NULL,
+    PRIMARY KEY(timestamp)
+);
+CREATE TABLE coef_var (
+    symbol TEXT NOT NULL,
+    cvar REAL NOT NULL,
+    PRIMARY KEY(symbol)
+);
+CREATE TABLE beta_coef (
+    symbol TEXT NOT NULL,
+    beta REAL NOT NULL,
+    PRIMARY KEY(symbol)
+);
+
+
 CREATE INDEX transactions_portfolio_from_index ON transactions (portfolio_from);
 CREATE INDEX transactions_portfolio_to_index ON transactions (portfolio_to);
 ALTER TABLE accesses ADD CONSTRAINT accesses_ref_list_id FOREIGN KEY (list_id) REFERENCES stocklists (id) ON DELETE NO ACTION;
