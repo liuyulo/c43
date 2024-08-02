@@ -13,10 +13,15 @@ JS_FILES += ${IHP}/static/vendor/turbolinks.js
 JS_FILES += ${IHP}/static/vendor/turbolinksInstantClick.js
 JS_FILES += ${IHP}/static/vendor/turbolinksMorphdom.js
 
-
-Fixtures.sql:
-	pg_dump -a -O --disable-triggers -h $$PWD/build/db -d app -f Fixtures.sql
-Application/Fixtures.sql:
-	cat Constraints.sql Fixtures.sql > Application/Fixtures.sql
+# pg_dump -v -O --disable-triggers -h $PWD/build/db -d app -f Dump.sql
+db.dump:
+	pg_dump -v -O --disable-triggers -h $$PWD/build/db -d app -Fc -f db.dump
 
 include ${IHP}/Makefile.dist
+
+db:
+	(echo "drop schema public cascade; create schema public;" | psql -h ${PWD}/build/db -d app) && \
+	psql -v ON_ERROR_STOP=1 -h ${PWD}/build/db -d app < "${IHP_LIB}/IHPSchema.sql" && \
+	psql -v ON_ERROR_STOP=1 -h ${PWD}/build/db -d app < Application/Schema.sql && \
+	psql -v ON_ERROR_STOP=1 -h ${PWD}/build/db -d app < Application/Constraints.sql && \
+	psql -v ON_ERROR_STOP=1 -h ${PWD}/build/db -d app < Application/Fixtures.sql

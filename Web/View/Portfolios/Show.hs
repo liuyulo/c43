@@ -1,15 +1,18 @@
 module Web.View.Portfolios.Show where
+
 import Web.View.Prelude
+import Database.PostgreSQL.Simple.Time
 
 data ShowView = ShowView
-    { portfolio :: Portfolio
-    , holds :: [(Id Stock, Float, Float)]
-    , trans :: [(UTCTime, Id Stock, Float, Float)]
-    }
+  { portfolio :: Portfolio,
+    holds :: [(Id Stock, Float, Float, Day)],
+    trans :: [(UTCTime, Id Stock, Float, Float)]
+  }
+
 instance View ShowView where
-    html ShowView { .. } = [hsx|
+  html ShowView {..} = [hsx|
         {breadcrumb}
-        <h1>Portfolio</h1>
+        <h1>Portfolio  {renderStat}</h1>
         <table class="table">
             <tbody>
                 <tr>
@@ -30,6 +33,8 @@ instance View ShowView where
                 </tr>
             </tbody>
         </table>
+
+
         <h2>Holdings</h2>
         <table class="table">
             <thead>
@@ -59,19 +64,23 @@ instance View ShowView where
             </tbody>
         </table>
     |]
-        where
-            -- holds :: [(Id Stock, Float, Float)]
-            total =  sum $ (\(_, a, b) -> a * b) <$> holds
-            breadcrumb = renderBreadcrumb
-                [
-                    breadcrumbLink "Profile" ShowUserAction,
-                    breadcrumbLink "Portfolios" PortfoliosAction ,
-                    breadcrumbText "Portfolio"
-                ]
-renderHold :: (Id Stock, Float, Float) -> Html
-renderHold (symbol, amount, value) = [hsx|
+    where
+      -- holds :: [(Id Stock, Float, Float)]
+        total = sum $ (\(_, a, b, _) -> a * b) <$> holds
+        breadcrumb = renderBreadcrumb [
+                breadcrumbLink "Profile" ShowUserAction,
+                breadcrumbLink "Portfolios" PortfoliosAction,
+                breadcrumbText "Portfolio"
+            ]
+        latest = minimum $ (\(_, _, _, d) -> d) <$> holds
+        renderStat = [hsx|
+            <a href={MatrixPorfolioAction portfolio.id (show $ addDays (-5) latest) (show latest)} class="float-right btn btn-primary">View Statistics</a>
+        |]
+
+renderHold :: (Id Stock, Float, Float, Day) -> Html
+renderHold (symbol, amount, value, day) = [hsx|
     <tr>
-        <td>{please symbol}</td>
+        <td>{renderSymbol symbol day}</td>
         <td>{amount}</td>
         <td>${value}</td>
     </tr>

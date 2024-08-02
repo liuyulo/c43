@@ -18,5 +18,6 @@ instance View WelcomeView where
                 <div style="display: flex; gap: 2em">
                 <a class="btn btn-primary" href={NewUserAction}>Create account</a>
                 <a class="btn btn-primary" href={NewSessionAction}>Login</a>
+                <a class="btn btn-primary" href={HistoriesAction}>History</a>
             </div>
             |]
