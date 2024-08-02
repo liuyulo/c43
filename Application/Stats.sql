@@ -1,3 +1,5 @@
+-- NOTE: this is outdated. see overleaf/ask Robert on discord
+
 
 -- NOTE: Every "create table" or "create view" is in the migration folder.
 
@@ -9,9 +11,9 @@ We will use the second formula (it's more convenient because the lag syntax is l
 relative change = (today's price - yesterday's price) / yesterday's price
                 = today's price / yesterday's price - 1
 */
-create table stock_changes as (
-    select "timestamp", close, symbol,
-    close / (lag(close, 1) over (order by symbol, "timestamp")) - 1 as diff
+create view stock_changes as (
+    select timestamp, close, symbol,
+    coalesce(close / (lag(close, 1) over (partition by symbol order by timestamp)) - 1, 0) as diff
 from history
 );
 -- Need this update because we sorted by (symbol, created at), since otherwise
@@ -20,6 +22,23 @@ update stock_changes
 set diff = 0.0
 where "timestamp" < timestamp with time zone '2013-02-09'; -- oldest timestamp occurs on 2013-02-08, others are after.
 
+
+/*
+Compute the average relative change in the market for each day.
+This is useful for computing the coefficient of variation and the beta of each stock.
+
+       "timestamp"       |            avg             
+------------------------+----------------------------
+ 2013-02-08 00:00:00-05 |     0.00000000000000000000
+ 2013-02-11 00:00:00-05 |    -0.00113625747033921996
+ 2013-02-12 00:00:00-05 |     0.00290388132691383575
+ 2013-02-13 00:00:00-05 |     0.00161624249110822593
+ 2013-02-14 00:00:00-05 |     0.00033726937779521996
+*/
+create view market_changes as
+select "timestamp", avg(diff) as market_diff
+from stock_changes
+group by "timestamp";
 
 /*
 Compute the correlation matrix for the entire history of the stocks ('AAPL', 'A', 'AAL').
@@ -53,22 +72,7 @@ where x.symbol in ('AAPL', 'A', 'AAL')
 group by x.symbol, y.symbol
 order by x.symbol, y.symbol;
 
-/*
-Compute the average relative change in the market for each day.
-This is useful for computing the coefficient of variation and the beta of each stock.
 
-       "timestamp"       |            avg             
-------------------------+----------------------------
- 2013-02-08 00:00:00-05 |     0.00000000000000000000
- 2013-02-11 00:00:00-05 |    -0.00113625747033921996
- 2013-02-12 00:00:00-05 |     0.00290388132691383575
- 2013-02-13 00:00:00-05 |     0.00161624249110822593
- 2013-02-14 00:00:00-05 |     0.00033726937779521996
-*/
-create view market_changes as
-select "timestamp", avg(diff) as market_diff
-from stock_changes
-group by "timestamp";
 
 /*
 coefficient of variation for each stock symbol
@@ -118,3 +122,30 @@ from (
     order by timestamp desc
     limit 1
 ) diff_select;
+
+
+-- Format: https://www.dpriver.com/pp/sqlformat.htm
+
+/* Get total value (stocks + cash) from a portfolio. */
+
+SELECT total_stock_value + cash
+FROM
+(SELECT SUM(amount * last_price) AS total_stock_value
+FROM portfolio_holds
+NATURAL JOIN -- only keep symbols which are in the portfolio
+(
+    -- get last price of every stock
+    SELECT symbol, close AS last_price FROM history
+    NATURAL JOIN -- only keep pairs (symbol, timestamp) where the timestamp is maximal.
+    (
+        SELECT symbol, MAX(timestamp) AS timestamp
+        FROM history
+        GROUP BY  symbol
+    ) last_price
+) a
+WHERE portfolio_id = 'ef20d74f-9556-4d57-aa44-df8bd1ad7665'
+) stock_value,
+(
+    SELECT cash FROM portfolios
+    WHERE id = 'ef20d74f-9556-4d57-aa44-df8bd1ad7665'
+) cash;

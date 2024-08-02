@@ -1,3 +1,4 @@
+-- NOTE: this is outdated. see overleaf/ask Robert on discord
 /*
 Get the relative change in close price for a stock symbol.
 
