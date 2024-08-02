@@ -7,6 +7,7 @@ import IHP.LoginSupport.Middleware
 import Web.Controller.Sessions
 
 -- Controller Imports
+import Web.Controller.Transactions
 import Web.Controller.Reviews
 import Web.Controller.ListContain
 import Web.Controller.Stocklists
@@ -22,6 +23,7 @@ instance FrontController WebApplication where
     controllers =
         [ startPage WelcomeAction
         -- Generator Marker
+        , parseRoute @TransactionsController
         , parseRoute @ReviewsController
         , parseRoute @ListContainController
         , parseRoute @StocklistsController

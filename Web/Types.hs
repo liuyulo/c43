@@ -32,7 +32,7 @@ data SessionsController
     deriving (Eq, Show, Data)
 data PortfoliosController
     = PortfoliosAction
-    | NewPortfolioAction { userId :: !(Id User)}
+    | NewPortfolioAction
     | ShowPortfolioAction { portfolioId :: !(Id Portfolio) }
     | CreatePortfolioAction
     | EditPortfolioAction { portfolioId :: !(Id Portfolio) }
@@ -73,4 +73,8 @@ data ReviewsController
     | EditReviewAction { listId :: !(Id Stocklist), username ::Text }
     | UpdateReviewAction { listId :: !(Id Stocklist), username ::Text }
     | DeleteReviewAction { listId :: !(Id Stocklist), username ::Text }
+    deriving (Eq, Show, Data)
+
+data TransactionsController
+    =  CreateTransactionAction
     deriving (Eq, Show, Data)

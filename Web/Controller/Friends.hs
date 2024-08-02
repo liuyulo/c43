@@ -13,7 +13,7 @@ instance Controller FriendsController where
                 |> fetch
         incoming <- query @Friend
                 |> filterWhere (#userTo, currentUser.email)
-                |> filterWhereNot (#status, Accepted)
+                |> filterWhere (#status, Pending)
                 |> fetch
         outgoing <- query @Friend
                 |> filterWhere (#userFrom, currentUser.email)

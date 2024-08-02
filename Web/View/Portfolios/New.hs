@@ -1,12 +1,12 @@
 module Web.View.Portfolios.New where
 import Web.View.Prelude
 
-data NewView = NewView { portfolio :: Portfolio, user:: User }
+data NewView = NewView { portfolio :: Portfolio }
 
 instance View NewView where
     html NewView { .. } = [hsx|
         {breadcrumb}
-        <h1>New Portfolio for <span class="text-primary">{user.email}</span></h1>
+        <h1>New Portfolio for <span class="text-primary">{currentUser.email}</span></h1>
         {renderForm portfolio}
     |]
         where

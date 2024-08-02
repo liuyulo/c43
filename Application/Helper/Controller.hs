@@ -12,3 +12,8 @@ fetchSharedUsers listId = do
     let users :: [Text] = names |> map (\(Only name) -> name)
     users :: [User] <- query @User |> filterWhereIn (#email, users) |> fetch
     return users
+
+-- fetchHoldings :: Id Portfolio -> IO [(Id Stock, Int, Float)]
+-- fetchHoldings portId = do
+--     holds :: [(Id Stock, Int, Float)] <- sqlQuery "SELECT symbol, amount, value FROM portfolio_holds NATURAL JOIN stocks WHERE portfolio_id = ?" (Only portId)
+--     return holds

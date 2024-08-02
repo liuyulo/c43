@@ -11,23 +11,23 @@ instance Controller PortfoliosController where
 
     action PortfoliosAction = do
         portfolios <- query @Portfolio |> filterWhere (#username, currentUser.email) |> fetch
-        user <- fetch currentUserId
         render IndexView { .. }
 
-    action NewPortfolioAction { userId } = do
-        user <- fetch userId
-        let portfolio = newRecord |> set #username user.email
+    action NewPortfolioAction = do
+        let portfolio = newRecord |> set #username currentUser.email
         render NewView { .. }
 
     action ShowPortfolioAction { portfolioId } = do
         portfolio <- fetch portfolioId
         accessDeniedUnless (portfolio.username == currentUser.email)
-        let user = currentUser
+        holds :: [(Id Stock, Float, Float)] <- sqlQuery "SELECT symbol, amount, value FROM portfolio_holds NATURAL JOIN stocks WHERE portfolio_id = ?" (Only portfolioId)
+        trans :: [(UTCTime, Id Stock, Float, Float)] <- sqlQuery "SELECT created_at, symbol, amount, price FROM transactions WHERE portfolio_id = ?" $ Only portfolioId
         render ShowView { .. }
 
     action EditPortfolioAction { portfolioId } = do
         portfolio <- fetch portfolioId
         accessDeniedUnless (portfolio.username == currentUser.email)
+        holds :: [(Id Stock, Float)] <- sqlQuery "SELECT symbol, amount FROM portfolio_holds WHERE portfolio_id = ?" $ Only portfolioId
         render EditView { .. }
 
     action UpdatePortfolioAction { portfolioId } = do
@@ -36,7 +36,7 @@ instance Controller PortfoliosController where
         portfolio
             |> buildPortfolio
             |> ifValid \case
-                Left portfolio -> render EditView { .. }
+                Left portfolio -> redirectTo EditPortfolioAction { .. }
                 Right portfolio -> do
                     portfolio <- portfolio |> updateRecord
                     setSuccessMessage "Portfolio updated"

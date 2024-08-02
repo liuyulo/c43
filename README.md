@@ -13,10 +13,10 @@
 
 ## Data
 
-```
-make db
-pg_dump -a -h $PWD/build/db -d app -j 12 -Fd -f dump
-pg_restore -j 12 -d app dump -h $PWD/build/db
+```bash
+make Fixtures.sql # dump data
+make Application/Fixtures.sql # add constraints
+make db # restore data
 ```
 
 ## Installation
