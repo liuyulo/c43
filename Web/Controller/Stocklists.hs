@@ -1,10 +1,12 @@
 module Web.Controller.Stocklists where
 
+import IHP.Log as Log
 import Web.Controller.Prelude
 import Web.View.Stocklists.Edit
 import Web.View.Stocklists.Index
 import Web.View.Stocklists.New
 import Web.View.Stocklists.Show
+import Web.View.Stocklists.Matrix
 
 instance Controller StocklistsController where
     beforeAction = ensureIsUser
@@ -19,6 +21,13 @@ instance Controller StocklistsController where
             |> findManyBy #isPublic True
         render IndexView { .. }
 
+    action MatrixListAction {listId, start, end} = do
+        stocklist <- fetch listId
+        syms <- stocklist.listContains |> fetch
+        let symbols = (\sym -> sym.symbol) <$> syms
+        corcov <- fetchCorCov symbols start end
+        render MatrixView { .. }
+
     action NewStocklistAction = do
         let stocklist = newRecord |> set #username currentUser.email
         render NewView { .. }
@@ -30,7 +39,8 @@ instance Controller StocklistsController where
             |> filterWhere (#listId, stocklistId)
             |> fetchExists
         accessDeniedUnless $ stocklist.isPublic ||  access || stocklist.username == currentUser.email
-        stocks <- query @ListContain |> findManyBy #listId stocklistId
+        -- stocks <- query @ListContain |> findManyBy #listId stocklistId
+        stocks <- sqlQuery "SELECT symbol, amount, date FROM list_contains NATURAL JOIN current_values WHERE list_id = ?" (Only stocklistId)
         reviews <- query @Review |> findManyBy #listId stocklistId
         render ShowView { .. }
 

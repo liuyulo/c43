@@ -25,3 +25,6 @@ instance AutoRoute ReviewsController
 
 instance AutoRoute TransactionsController
 
+instance AutoRoute HistoryController
+instance AutoRoute StocksController
+
