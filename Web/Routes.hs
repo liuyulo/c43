@@ -22,3 +22,6 @@ instance AutoRoute ListContainController
 
 instance AutoRoute ReviewsController
 
+
+instance AutoRoute TransactionsController
+

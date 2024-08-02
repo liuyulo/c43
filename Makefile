@@ -14,7 +14,9 @@ JS_FILES += ${IHP}/static/vendor/turbolinksInstantClick.js
 JS_FILES += ${IHP}/static/vendor/turbolinksMorphdom.js
 
 
-pd_dump: ## Saves the current database state into the Fixtures.sql
-	pg_dump -Fc -a --inserts --column-inserts --disable-triggers -h $$PWD/build/db app > Application/Fixtures.sql
+Fixtures.sql:
+	pg_dump -a -O --disable-triggers -h $$PWD/build/db -d app -f Fixtures.sql
+Application/Fixtures.sql:
+	cat Constraints.sql Fixtures.sql > Application/Fixtures.sql
 
 include ${IHP}/Makefile.dist
