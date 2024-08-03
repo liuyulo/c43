@@ -1,12 +1,11 @@
 module Web.View.Stocklists.Show where
 import Web.View.Prelude
-
-data ShowView = ShowView { stocklist :: Stocklist, stocks :: [ListContain] , reviews::[Review]}
+data ShowView = ShowView { stocklist :: Stocklist, stocks :: [(Id Stock, Float, Day)] , reviews::[Review]}
 
 instance View ShowView where
     html ShowView { .. } = [hsx|
         {breadcrumb}
-        <h1>Stock List: {stocklist.listName}</h1>
+        <h1>Stock List: {stocklist.listName}  {renderStat}</h1>
         <p><strong>Owner: </strong> <span class="text-primary">{stocklist.username}</span></p>
         <p><strong>Category:</strong> {stocklist.category}</p>
         <p><strong>Public:</strong> {stocklist.isPublic}</p>
@@ -61,7 +60,10 @@ instance View ShowView where
                     {deleteButton stocklist username}
                     </div>
             </div> |]
-
+        latest = minimum $ (\(_,_,d)->d) <$> stocks
+        renderStat = [hsx|
+            <a href={MatrixListAction stocklist.id (show $ addDays (-5) latest) (show latest)} class="float-right btn btn-primary">View Statistics</a>
+        |]
 deleteButton :: Stocklist -> Text -> Html
 deleteButton list username
     | username == currentUser.email || list.username == currentUser.email = [hsx|
@@ -76,9 +78,9 @@ editButton list username
     |]
     | otherwise = ""
 
-renderStock stock = [hsx|
+renderStock (symbol, amount, day) = [hsx|
     <tr>
-        <td>{please stock.symbol}</td>
-        <td>{stock.amount}</td>
+        <td>{renderSymbol symbol day}</td>
+        <td>{amount}</td>
     </tr>
 |]

@@ -5,6 +5,8 @@ import Web.View.Portfolios.Index
 import Web.View.Portfolios.New
 import Web.View.Portfolios.Edit
 import Web.View.Portfolios.Show
+import Web.View.Portfolios.Matrix
+import Database.PostgreSQL.Simple.Time
 
 instance Controller PortfoliosController where
     beforeAction = ensureIsUser
@@ -12,6 +14,11 @@ instance Controller PortfoliosController where
     action PortfoliosAction = do
         portfolios <- query @Portfolio |> filterWhere (#username, currentUser.email) |> fetch
         render IndexView { .. }
+    action MatrixPorfolioAction {portfolioId, start, end} = do
+        portfolio <- fetch portfolioId
+        symbols :: [Only (Id Stock)] <- sqlQuery "SELECT symbol FROM portfolio_holds WHERE portfolio_id = ?" (Only portfolio.id)
+        corcov <- fetchCorCov ((\(Only i) -> i) <$> symbols) start end
+        render MatrixView { .. }
 
     action NewPortfolioAction = do
         let portfolio = newRecord |> set #username currentUser.email
@@ -20,8 +27,8 @@ instance Controller PortfoliosController where
     action ShowPortfolioAction { portfolioId } = do
         portfolio <- fetch portfolioId
         accessDeniedUnless (portfolio.username == currentUser.email)
-        holds :: [(Id Stock, Float, Float)] <- sqlQuery "SELECT symbol, amount, value FROM portfolio_holds NATURAL JOIN stocks WHERE portfolio_id = ?" (Only portfolioId)
-        trans :: [(UTCTime, Id Stock, Float, Float)] <- sqlQuery "SELECT created_at, symbol, amount, price FROM transactions WHERE portfolio_id = ?" $ Only portfolioId
+        holds :: [(Id Stock, Float, Float, Day)] <- sqlQuery "SELECT symbol, amount, value, date FROM portfolio_holds NATURAL JOIN current_values WHERE portfolio_id = ?" (Only portfolioId)
+        trans :: [(UTCTime, Id Stock, Float, Float)] <- sqlQuery "SELECT created_at, symbol, amount, price FROM transactions WHERE portfolio_id = ? ORDER BY created_at DESC" $ Only portfolioId
         render ShowView { .. }
 
     action EditPortfolioAction { portfolioId } = do
