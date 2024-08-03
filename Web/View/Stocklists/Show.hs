@@ -65,6 +65,7 @@ instance View ShowView where
         start = if null days then "2024-08-03" else (show $ addDays (-5) $ minimum days)
         renderStat = [hsx|
             <a href={MatrixListAction stocklist.id start end} class="float-right btn btn-primary">View Statistics</a>
+
         |]
 deleteButton :: Stocklist -> Text -> Html
 deleteButton list username
