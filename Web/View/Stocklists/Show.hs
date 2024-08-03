@@ -60,9 +60,12 @@ instance View ShowView where
                     {deleteButton stocklist username}
                     </div>
             </div> |]
-        latest = minimum $ (\(_,_,d)->d) <$> stocks
+        days = (\(_, _, d) -> d) <$> stocks
+        end = if null days then "2024-08-03" else (show $ minimum days)
+        start = if null days then "2024-08-03" else (show $ addDays (-5) $ minimum days)
         renderStat = [hsx|
-            <a href={MatrixListAction stocklist.id (show $ addDays (-5) latest) (show latest)} class="float-right btn btn-primary">View Statistics</a>
+            <a href={MatrixListAction stocklist.id start end} class="float-right btn btn-primary">View Statistics</a>
+
         |]
 deleteButton :: Stocklist -> Text -> Html
 deleteButton list username

@@ -72,11 +72,13 @@ instance View ShowView where
                 breadcrumbLink "Portfolios" PortfoliosAction,
                 breadcrumbText "Portfolio"
             ]
-        latest = minimum $ (\(_, _, _, d) -> d) <$> holds
-        renderStat = [hsx|
-            <a href={MatrixPorfolioAction portfolio.id (show $ addDays (-5) latest) (show latest)} class="float-right btn btn-primary">View Statistics</a>
-        |]
 
+        days = (\(_, _, _, d) -> d) <$> holds
+        end = if null days then "2024-08-03" else (show $ minimum days)
+        start = if null days then "2024-08-03" else (show $ addDays (-5) $ minimum days)
+        renderStat = [hsx|
+            <a href={MatrixPorfolioAction portfolio.id start end} class="float-right btn btn-primary">View Statistics</a>
+        |]
 renderHold :: (Id Stock, Float, Float, Day) -> Html
 renderHold (symbol, amount, value, day) = [hsx|
     <tr>
