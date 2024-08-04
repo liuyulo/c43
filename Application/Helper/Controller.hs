@@ -26,7 +26,9 @@ fetchCorCov stocks start end = sqlQuery"\
 \ ORDER BY x.symbol, y.symbol;" (In stocks, In stocks, start,end)
 
 fetchCvarBeta :: (?modelContext :: ModelContext) => Text -> Text -> Text -> IO (Double, Double)
-fetchCvarBeta symbol start end = sqlQuerySingleRow "\
+fetchCvarBeta symbol start end = case (start, end) of
+    ("N/A", "N/A") -> sqlQuerySingleRow "SELECT cvar, beta FROM stock_statistics WHERE symbol = " (symbol)
+    _ -> sqlQuerySingleRow "\
         \ SELECT stddev_samp(close) / AVG(close), covar_samp(diff, market_diff) / (SELECT var_samp(market_diff) FROM market_changes)\
         \ FROM stock_changes NATURAL JOIN market_changes\
         \ WHERE symbol = ? AND timestamp BETWEEN ? AND ?" (symbol, start, end)
